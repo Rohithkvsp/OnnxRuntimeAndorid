@@ -73,10 +73,7 @@ Java_com_play_onnxruntime_Inference_run(JNIEnv *env, jobject, jlong selfAddr,
         self->run(inputpixel);
 
 
-        char *ouput_label = new char[40];
         jstring label = env->NewStringUTF(self->getPredictedlabels().c_str());
-        delete ouput_label;
-
         return label;
 
     }
