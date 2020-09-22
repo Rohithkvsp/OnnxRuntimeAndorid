@@ -1,2 +1,4 @@
 .so filter=lfs diff=lfs merge=lfs -text
 *.so filter=lfs diff=lfs merge=lfs -text
+app/*.apk filter=lfs diff=lfs merge=lfs -text
+apk/app-debug.apk filter=lfs diff=lfs merge=lfs -text
