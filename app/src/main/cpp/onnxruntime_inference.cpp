@@ -13,9 +13,8 @@
 #include "utils.h"
 
 
-Inference::Inference(Ort::Env* env, const char* modelpath, const char* labelfilepath, int img_height, int img_width) :  modelpath_(modelpath), labelfilepath_(labelfilepath),
+Inference::Inference(std::unique_ptr<Ort::Env>& env, const char* modelpath, const char* labelfilepath, int img_height, int img_width) : env_(std::move(env)), modelpath_(modelpath), labelfilepath_(labelfilepath),
                                                                                                                        img_height_(img_height), img_width_(img_width) {
-    env_.reset(env);
     LOGD("model path  %s ", modelpath_);
     LOGD("label file path %s ", labelfilepath_);
     LOGD("Input image height  %d ", img_height_);
@@ -25,8 +24,7 @@ Inference::Inference(Ort::Env* env, const char* modelpath, const char* labelfile
     session_options.SetIntraOpNumThreads(1);
     OrtSessionOptionsAppendExecutionProvider_Nnapi(session_options);
     session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
-    //session = Ort::Session(env_, modelpath_, session_options);
-    session_.reset(new Ort::Session(*env_, modelpath_, session_options));
+    session_  = std::make_unique<Ort::Session>(*env_.get(), modelpath_, session_options);
     printNodes();
     createInputBuffer();
     readLabelsFile( std::string(labelfilepath_), labels);

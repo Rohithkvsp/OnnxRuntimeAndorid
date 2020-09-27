@@ -21,8 +21,6 @@
 class Inference {
     
 private:
-//    Ort::Env& env_;
-//    Ort::Session session{nullptr};
 
     std::unique_ptr<Ort::Env> env_;
     std::unique_ptr<Ort::Session> session_;
@@ -59,7 +57,7 @@ private:
 
 public:
 
-    Inference(Ort::Env* env,  const char*  modelpath, const char*  labelfilepath,  int img_height, int img_width);
+    Inference(std::unique_ptr<Ort::Env>& env,  const char*  modelpath, const char*  labelfilepath,  int img_height, int img_width);
     Inference(const Inference& ) = delete; //no copy
     Inference& operator = (const Inference &) = delete;//no copy
     void run(uint8_t* pixels);
