@@ -1,6 +1,6 @@
 # OnnxRuntimeAndorid
 
-This app uses ONNXRuntime for Android C/C++ library to run MobileNet-v2 ONNX model. Android camera pixels are passed to ONNXRuntime using JNI
+This app uses ONNXRuntime (with NNAPI enabled) for Android C/C++ library to run MobileNet-v2 ONNX model. Android camera pixels are passed to ONNXRuntime using JNI
 
   <table>
     <tr>
@@ -50,7 +50,11 @@ Install the prebuilt apk file
 
 Open the local.properties file and set ndk.dir to the path of Android NDK folder.
 
-        sdk.dir = /Users/Name/Library/Android/sdk
-        ndk.dir = /Users/Name/Documents/Android/android-ndk-r21d
+    sdk.dir = /Users/Name/Library/Android/sdk
+    ndk.dir = /Users/Name/Documents/Android/android-ndk-r21d
 
 Run the app after making the above changes.
+
+#Note
+This app was test on Google pixel3 and build for arm64-v8a.
+
