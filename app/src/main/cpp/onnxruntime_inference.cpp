@@ -13,9 +13,9 @@
 #include "utils.h"
 
 
-Inference::Inference(Ort::Env& env, const char* modelpath, const char* labelfilepath, int img_height, int img_width) : env_(env), modelpath_(modelpath), labelfilepath_(labelfilepath),
+Inference::Inference(Ort::Env* env, const char* modelpath, const char* labelfilepath, int img_height, int img_width) :  modelpath_(modelpath), labelfilepath_(labelfilepath),
                                                                                                                        img_height_(img_height), img_width_(img_width) {
-
+    env_.reset(env);
     LOGD("model path  %s ", modelpath_);
     LOGD("label file path %s ", labelfilepath_);
     LOGD("Input image height  %d ", img_height_);
@@ -23,9 +23,10 @@ Inference::Inference(Ort::Env& env, const char* modelpath, const char* labelfile
 
     Ort::SessionOptions session_options;
     session_options.SetIntraOpNumThreads(1);
-    //OrtSessionOptionsAppendExecutionProvider_Nnapi(session_options);
+    OrtSessionOptionsAppendExecutionProvider_Nnapi(session_options);
     session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
-    session = Ort::Session(env_, modelpath_, session_options);
+    //session = Ort::Session(env_, modelpath_, session_options);
+    session_.reset(new Ort::Session(*env_, modelpath_, session_options));
     printNodes();
     createInputBuffer();
     readLabelsFile( std::string(labelfilepath_), labels);
@@ -53,18 +54,18 @@ void Inference::createInputBuffer()
 void Inference::printNodes() {
      Ort::AllocatorWithDefaultOptions allocator;
         
-    size_t num_input_nodes = session.GetInputCount();
+    size_t num_input_nodes = session_->GetInputCount();
     input_node_names.reserve(num_input_nodes);
     
     
     LOGD("Number of input =  %zu",num_input_nodes);
     
     for (int i = 0; i < num_input_nodes; i++){
-        char* input_name = session.GetInputName(i, allocator);
+        char* input_name = session_->GetInputName(i, allocator);
         LOGD("Input %d : name = %s", i, input_name);
         input_node_names[i] = input_name;
         
-        Ort::TypeInfo type_info = session.GetInputTypeInfo(i);
+        Ort::TypeInfo type_info = session_->GetInputTypeInfo(i);
         auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
         
         ONNXTensorElementDataType type = tensor_info.GetElementType();
@@ -83,16 +84,16 @@ void Inference::printNodes() {
     
     
     
-    size_t num_output_nodes = session.GetOutputCount();
+    size_t num_output_nodes = session_->GetOutputCount();
     output_node_names.reserve(num_output_nodes);
     
     
     for (int i = 0; i < num_output_nodes; i++){
-        char* output_name = session.GetOutputName(i, allocator);
+        char* output_name = session_->GetOutputName(i, allocator);
         LOGD("Output %d : name = %s", i, output_name);
         output_node_names[i] = output_name;
         
-        Ort::TypeInfo type_info = session.GetOutputTypeInfo(i);
+        Ort::TypeInfo type_info = session_->GetOutputTypeInfo(i);
         auto tensor_info = type_info.GetTensorTypeAndShapeInfo();
         
         ONNXTensorElementDataType type = tensor_info.GetElementType();
@@ -116,7 +117,7 @@ void Inference::run(uint8_t* pixels){
     preprocess(pixels, img_height_, img_width_, 4, normalized.get(), {0.485f, 0.456f, 0.406f}, {0.229, 0.224, 0.225});
     HWCtoCHW(normalized.get(), img_height_, img_width_, 3, input_data_chw.get());
     
-    auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_node_names.data(), &input_tensor, 1, output_node_names.data(), 1);
+    auto output_tensors = session_->Run(Ort::RunOptions{nullptr}, input_node_names.data(), &input_tensor, 1, output_node_names.data(), 1);
     assert(output_tensors.size() == 1 && output_tensors.front().IsTensor());
 
     float* floatarr = output_tensors.front().GetTensorMutableData<float>();

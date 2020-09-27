@@ -21,12 +21,14 @@ JNIEXPORT jlong JNICALL
 Java_com_play_onnxruntime_Inference_newSelf(JNIEnv *env, jobject,jstring model_path, jstring label_file_path, jint img_height, jint img_width) {
 
 
-    Ort::Env environment(ORT_LOGGING_LEVEL_WARNING,"test");
+//    Ort::Env environment(ORT_LOGGING_LEVEL_WARNING,"test");
+    std::unique_ptr<Ort::Env> environment(new Ort::Env(ORT_LOGGING_LEVEL_VERBOSE,"test"));
     const char *model_path_ch = env->GetStringUTFChars(model_path, 0);
     const char *label_file_path_ch = env->GetStringUTFChars(label_file_path, 0);
 
 
-    Inference *self = new Inference(environment, model_path_ch, label_file_path_ch, img_height, img_width);
+    //Inference *self = new Inference(environment, model_path_ch, label_file_path_ch, img_height, img_width);
+    Inference *self = new Inference(environment.release(), model_path_ch, label_file_path_ch, img_height, img_width);
     return (jlong) self;
 
 

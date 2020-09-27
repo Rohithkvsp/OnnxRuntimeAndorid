@@ -14,15 +14,19 @@
 #include <cinttypes>
 #include "onnxruntime/core/session/onnxruntime_cxx_api.h"
 #include "onnxruntime_c_api.h"
-//#include "onnxruntime/core/providers/nnapi/nnapi_provider_factory.h"
+#include "onnxruntime/core/providers/nnapi/nnapi_provider_factory.h"
 
 
 
 class Inference {
     
 private:
-    Ort::Env& env_;
-    Ort::Session session{nullptr};
+//    Ort::Env& env_;
+//    Ort::Session session{nullptr};
+
+    std::unique_ptr<Ort::Env> env_;
+    std::unique_ptr<Ort::Session> session_;
+
     const char* modelpath_;
     const char* labelfilepath_;
     int img_height_;
@@ -55,7 +59,7 @@ private:
 
 public:
 
-    Inference(Ort::Env& env,  const char*  modelpath, const char*  labelfilepath,  int img_height, int img_width);
+    Inference(Ort::Env* env,  const char*  modelpath, const char*  labelfilepath,  int img_height, int img_width);
     Inference(const Inference& ) = delete; //no copy
     Inference& operator = (const Inference &) = delete;//no copy
     void run(uint8_t* pixels);

@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         // hideSystemUI(); //hide UI
         Log.d(TAG,"on Resume");
 
-        openBackgroundThread();//start the backgroundthread
+
 
 
         if(mTextureView.isAvailable()) {
@@ -203,6 +203,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else
             mTextureView.setSurfaceTextureListener(textureListener);
+
+        openBackgroundThread();//start the backgroundthread
 
     }
 
@@ -487,12 +489,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void classifyFrame() {
         if (inference == null) {
-            Log.e(TAG,"Uninitialized Classifier or invalid context.");
+            Log.e(TAG,"Uninitialized inference or invalid context.");
             //return;
         }
 
         if (mCameraDevice == null) {
-            Log.e(TAG,"Uninitialized Classifier or invalid context.");
+            Log.e(TAG,"Uninitialized mCameraDevice or invalid context.");
             return;
         }
 
