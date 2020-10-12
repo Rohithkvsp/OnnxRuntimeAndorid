@@ -5,17 +5,19 @@ This app uses ONNXRuntime (with NNAPI enabled) for Android C/C++ library to run 
   <table>
     <tr>
       <td>
-        <img src="https://github.com/Rohithkvsp/OnnxRuntimeAndorid/blob/master/imgs/orange.png" width="300" height="500">
-      </td>
-      <td>
         <img src="https://github.com/Rohithkvsp/OnnxRuntimeAndorid/blob/master/imgs/laptop.png" width="300" height="500">
       </td>
       <td>
         <img src="https://github.com/Rohithkvsp/OnnxRuntimeAndorid/blob/master/imgs/lamp.png" width="300" height="500">
       </td>
+      <td>
+        <img src="https://github.com/Rohithkvsp/OnnxRuntimeAndorid/blob/master/imgs/bottle.png" width="300" height="500">
+      </td>
     </tr>
   </table>
- 
+
+
+ #On Google pixel 3 ONNXRuntime (with NNAPI execution provider) took around 25 miliseconds to run MobileNetV2 model
 
 # Implemtation Details
 
@@ -32,7 +34,7 @@ libonnxruntime.so is copied to distribution/lib/arm64-v8a/libonnxruntime.so and 
  - app/CMakeLists.txt is the cmake file to compile the c++ code
 
 # Run the prebuilt apk 
-copy model/mobilenetv2-7.onnx and model/labels.txt to /data/local/tmp directoy on device
+copy model/mobilenetv2-7.onnx and model/labels.txt to /data/local/tmp directory on device
 
     adb push model/mobilenetv2-7.onnx /data/local/tmp
     adb push model/labels.txt /data/local/tmp
