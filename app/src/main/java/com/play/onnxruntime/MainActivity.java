@@ -38,11 +38,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import ai.onnxruntime.OrtException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mButton;
 
-    static String TAG = "onnxruntime_inference";
+    static String TAG = "OnnxRuntime";
 
     private static final int MAX_PREVIEW_WIDTH = 1920;
 
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     String model_path = "/data/local/tmp/mobilenetv2-7.onnx";
     String label_file_path = "/data/local/tmp/labels.txt";
 
+    private ImageClassifier onnxruntimeImageClassifier;
 
 
     private final TextureView.SurfaceTextureListener textureListener =
@@ -182,7 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
 
-        inference = new Inference(model_path, label_file_path, img_height, img_width);
+//        inference = new Inference(model_path, label_file_path, img_height, img_width);
+
+
+
+        onnxruntimeImageClassifier = new ImageClassifier(MainActivity.this);
+
+
+
 
 
     }
@@ -222,8 +233,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         Log.d(TAG,"on  Destory");
-        if(inference!=null)
-            inference.delete();
+//        if(inference!=null)
+//            inference.delete();
         if(bitmap!=null)
             bitmap.recycle();
         if(resizedbitmap!=null)
@@ -488,10 +499,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void classifyFrame() {
-        if (inference == null) {
-            Log.e(TAG,"Uninitialized inference or invalid context.");
-            //return;
-        }
+//        if (inference == null) {
+//            Log.e(TAG,"Uninitialized inference or invalid context.");
+//            //return;
+//        }
 
         if (mCameraDevice == null) {
             Log.e(TAG,"Uninitialized mCameraDevice or invalid context.");
@@ -508,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
             resizedbitmap = Bitmap.createScaledBitmap(bitmap, img_width, img_height, true);// resize
 
             long startTime = SystemClock.uptimeMillis();
-            output_text = inference.run(resizedbitmap);
+//            output_text = inference.run(resizedbitmap);
 
             long endTime = SystemClock.uptimeMillis();
             Log.e(TAG, " inference " + Long.toString(endTime - startTime) + " in mills ");
@@ -538,8 +549,8 @@ public class MainActivity extends AppCompatActivity {
             bitmap = Bitmap.createBitmap( bitmap, 0,  bitmap.getHeight()/2 - bitmap.getWidth()/2,  bitmap.getWidth(),  bitmap.getWidth()); //center crop
             resizedbitmap = Bitmap.createScaledBitmap(bitmap, img_width, img_height, true);//resize
 
-            output_text = inference.run(resizedbitmap);
-
+//            output_text = inference.run(resizedbitmap);
+//
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
