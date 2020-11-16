@@ -499,10 +499,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void classifyFrame() {
-//        if (inference == null) {
-//            Log.e(TAG,"Uninitialized inference or invalid context.");
-//            //return;
-//        }
+        if (onnxruntimeImageClassifier == null) {
+            Log.e(TAG,"Uninitialized inference or invalid context.");
+            return;
+        }
 
         if (mCameraDevice == null) {
             Log.e(TAG,"Uninitialized mCameraDevice or invalid context.");
@@ -512,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
 
        //// resizedbitmap = mTextureView.getBitmap(out_width, out_height);
         bitmap = mTextureView.getBitmap();
-        Log.v(TAG,"bitmap.getWidth() "+ bitmap.getWidth() + "bitmap.getHeight" + bitmap.getHeight());
+        Log.v(TAG,"bitmap.getWidth()  "+ bitmap.getWidth() + "bitmap.getHeight " + bitmap.getHeight());
 
         if (bitmap.getWidth() <= bitmap.getHeight()) { //portrait
             bitmap = Bitmap.createBitmap(bitmap, 0, bitmap.getHeight()/2 - bitmap.getWidth()/2, bitmap.getWidth(), bitmap.getWidth()); //center crop
@@ -520,6 +520,7 @@ public class MainActivity extends AppCompatActivity {
 
             long startTime = SystemClock.uptimeMillis();
 //            output_text = inference.run(resizedbitmap);
+            onnxruntimeImageClassifier.run(resizedbitmap);
 
             long endTime = SystemClock.uptimeMillis();
             Log.e(TAG, " inference " + Long.toString(endTime - startTime) + " in mills ");

@@ -13,15 +13,15 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        ndk {
-            abiFilters 'arm64-v8a'
-        }
-
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++14"
-            }
-        }
+//        ndk {
+//            abiFilters 'arm64-v8a'
+//        }
+//
+//        externalNativeBuild {
+//            cmake {
+//                cppFlags "-std=c++14"
+//            }
+//        }
     }
 
     buildTypes {
@@ -31,22 +31,31 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            // let gradle pack the shared library into apk
-            jniLibs.srcDirs = ['../distribution/lib']
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
-    }
+//    sourceSets {
+//        main {
+//            // let gradle pack the shared library into apk
+//            jniLibs.srcDirs = ['../distribution/lib']
+//        }
+//    }
+//
+//    externalNativeBuild {
+//        cmake {
+//            path "CMakeLists.txt"
+//        }
+//    }
 
 
     aaptOptions {
         noCompress "onnx"
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a'
+            universalApk true
+        }
     }
 
 }
