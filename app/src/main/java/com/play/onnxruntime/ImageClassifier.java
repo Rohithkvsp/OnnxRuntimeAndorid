@@ -205,41 +205,29 @@ public class ImageClassifier {
 
     private void normalize()
     {
+
         int pixel = 0;
         for (int i = 0; i <DIM_HEIGHT ; ++i) {
             for (int j = 0; j < DIM_WIDTH; ++j) {
                 final int val = intValues[pixel++];
 
-                int r = (val >> 16) & 0xFF;
-                int g = (val >> 8) & 0xFF;
-                int b = val & 0xFF;
+                float r = ((val >> 16) & 0xFF)/255.0f;
+                float g = ((val >> 8) & 0xFF)/255.0f;
+                float b = ((val) & 0xFF)/255.0f;
 
-                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE] = ((r/255.0f) - mean[0])/vairance[0]; //r
-                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE+1] = ((g/255.0f) - mean[1])/vairance[2]; //g
-                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE+2] = ((b/255.0f) - mean[2])/vairance[2];  //b
-
-//                imgData.putFloat( ((r/255.0f) - mean[0])/vairance[0] );
-//                imgData.putFloat( ((g/255.0f) - mean[1])/vairance[2] );
-//                imgData.putFloat( ((b/255.0f) - mean[2])/vairance[2] );
-
-
-//                imgData.putFloat((((val >> 16) & 0xFF) - mean[0])/vairance[0]); //r
-//                imgData.putFloat((((val >> 8) & 0xFF) - mean[1])/vairance[1]);//g
-//                imgData.putFloat(((val & 0xFF) - mean[2])/vairance[2]);//b
-
-//                normalized [(i*DIM_WIDTH+j)*3] = (((val >> 16) & 0xFF) - mean[0])/vairance[0]; //r
-//                normalized [(i*DIM_WIDTH+j)*3+1] = (((val >> 8) & 0xFF) - mean[1])/vairance[1]; //g
-//                normalized [(i*DIM_WIDTH+j)*3+2] = ((val& 0xFF) - mean[2])/vairance[2];  //b
+                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE] = (r - mean[0])/vairance[0]; //r
+                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE+1] = (g - mean[1])/vairance[1]; //g
+                normalized [(i*DIM_WIDTH+j)*DIM_CHANNEL_SIZE+2] = (b - mean[2])/vairance[2];  //b
 
 
             }
         }
     }
 
-    private  void HWCtoHWC()
+    private  void HWCtoCHW()
     {
-        imgData.rewind();
-        for (int c = 0; c < 3; ++c) {
+        imgData.clear();
+        for (int c = 0; c < DIM_CHANNEL_SIZE; ++c) {
             for (int i = 0; i <DIM_HEIGHT ; ++i) {
                 for (int j = 0; j < DIM_WIDTH; ++j) {
 
@@ -319,10 +307,7 @@ public class ImageClassifier {
 
         while(pQueue.size()>0)
         {
-//            Log.d(TAG, "pQueue.size() "+pQueue.size());
             Pair pair = pQueue.poll();
-//            Log.d(TAG, "pair"+String.valueOf(pair.first)+" , "+String.valueOf(pair.second));
-
             results.add(pair);
         }
 
@@ -340,7 +325,7 @@ public class ImageClassifier {
         }
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
         normalize();
-        HWCtoHWC();
+        HWCtoCHW();
 
         try (OrtSession.Result res = session.run(container)) {
             Log.d(TAG,"computed Output size : "+res.size());
@@ -349,13 +334,8 @@ public class ImageClassifier {
                 Log.d(TAG,"computed Output type : "+output_node.getValue().getType());
                 OnnxTensor outputTensor = (OnnxTensor) output_node.getValue();
                 Log.d(TAG,"computed Output size : "+outputTensor.getFloatBuffer().capacity());
-//                Log.d(TAG, String.valueOf(outputTensor.getFloatBuffer().array()[0]));
-//                for(int i = 0;i <(int) output_size;i++)
-//                {
-//                    output_array[i] = outputTensor.getFloatBuffer().get();
-//                }
+
                 float [] output_array = outputTensor.getFloatBuffer().array();
-                //Log.d(TAG,"output_arrays length "+output_arrays.length);
 
                 softmax(output_array);
                 postprocess(5);

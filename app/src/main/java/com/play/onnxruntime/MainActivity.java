@@ -551,6 +551,7 @@ public class MainActivity extends AppCompatActivity {
             resizedbitmap = Bitmap.createScaledBitmap(bitmap, img_width, img_height, true);//resize
 
 //            output_text = inference.run(resizedbitmap);
+            onnxruntimeImageClassifier.run(resizedbitmap);
 //
             runOnUiThread(new Runnable() {
                 @Override
